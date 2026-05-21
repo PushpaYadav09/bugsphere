@@ -1,0 +1,14 @@
+package com.bugsphere.bugsphere.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+// JSON body for creating or updating a project
+@Data
+public class ProjectRequest {
+
+    @NotBlank(message = "Project name is required")
+    private String name;
+
+    private String description; // optional
+}
