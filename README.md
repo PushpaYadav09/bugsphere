@@ -3,7 +3,8 @@
 A full-stack bug tracking system built with Spring Boot and React.
 Manage bugs, assign developers, track progress — role-based access control with JWT authentication.
 
-<img width="1615" height="628" alt="dashboard" src="https://github.com/user-attachments/assets/8cf07a14-daca-4c11-a0f4-d77ac7a9e019" />
+<img width="1615" height="850" alt="dashboard" src="https://github.com/user-attachments/assets/3356577a-5c08-4830-894f-143f26280446" />
+
 BugSphere Dashboard
 
 ---
