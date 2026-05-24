@@ -1,254 +1,290 @@
-# BugSphere 🐞
+# BugSphere 🐛
 
-BugSphere is a full-stack bug tracking and project management system built using Spring Boot, React, PostgreSQL, and JWT Authentication.
+A full-stack bug tracking system built with Spring Boot and React.
+Manage bugs, assign developers, track progress — role-based access control with JWT authentication.
 
-The application allows teams to manage projects, track bugs, assign issues to users, and maintain secure role-based access through JWT authentication.
-
----
-
-# 🚀 Features
-
-## 🔐 Authentication & Security
-
-* JWT-based Authentication
-* Secure Login & Registration
-* Role-Based Authorization (Admin/User)
-* Protected Backend APIs using Spring Security
-* Protected Frontend Routes using React Router
-* Automatic JWT token handling using Axios Interceptors
-* BCrypt Password Encryption
+![BugSphere Dashboard](screenshots/dashboard.png)
 
 ---
 
-## 🐞 Bug Management
+## What is BugSphere?
 
-* Create Bugs
-* Update Bugs
-* Delete Bugs
-* View All Bugs
-* Assign Bugs to Users
-* Bug Priority Levels
-* Bug Status Tracking
-
-  * OPEN
-  * IN_PROGRESS
-  * RESOLVED
-  * CLOSED
-* Search and Filter Bugs
+BugSphere is a mini Jira clone where:
+- **Admins** can create projects, assign bugs, manage users, delete records
+- **Users** can report bugs, update status, view assigned work
+- Every action is secured — wrong role = 403 Forbidden
+- Login gives you a JWT token — no sessions, fully stateless
 
 ---
 
-## 📁 Project Management
+## Tech Stack
 
-* Create Projects
-* View Projects
-* Link Bugs to Projects
-* Project-wise Bug Tracking
+### Backend
+| Technology | Purpose |
+|---|---|
+| Java 17 | Programming language |
+| Spring Boot 3.3 | Backend framework |
+| Spring Security | Authentication and authorization |
+| JWT (jjwt 0.11.5) | Stateless token-based auth |
+| Spring Data JPA | Database access layer |
+| Hibernate | ORM — maps Java classes to DB tables |
+| PostgreSQL | Relational database |
+| Lombok | Reduces boilerplate code |
+| Maven | Dependency management |
 
----
-
-## 👤 User Management
-
-* User Registration
-* User Login
-* Role Management
-* Admin Secret Code Protection
-* Assign Bugs to Team Members
-
----
-
-# 🛠 Tech Stack
-
-## Backend
-
-* Java
-* Spring Boot
-* Spring Security
-* JWT Authentication
-* Hibernate / JPA
-* PostgreSQL
-* Maven
-
-## Frontend
-
-* React
-* Vite
-* Axios
-* React Router DOM
-* Tailwind CSS
+### Frontend
+| Technology | Purpose |
+|---|---|
+| React 18 | UI library |
+| Vite | Build tool and dev server |
+| Tailwind CSS 3 | Utility-first styling |
+| Axios | HTTP client with interceptors |
+| React Router v6 | Client-side routing |
+| Context API | Global auth state management |
 
 ---
 
-# 📂 Backend Architecture
+## Features
 
-```text
-src/main/java/com/bugsphere/bugsphere
-├── config
-├── controller
-├── dto
-├── entity
-├── exception
-├── repository
-├── security
-└── service
-```
+### Authentication
+- Register as User or Admin
+- Admin registration requires a secret code
+- JWT token issued on login — expires in 24 hours
+- Token auto-attached to every API request via Axios interceptor
+- Expired token → automatic logout and redirect to login
+
+### Bug Management
+- Create bugs with title, description, priority, project
+- Priority levels: LOW / MEDIUM / HIGH / CRITICAL
+- Status lifecycle: OPEN → IN_PROGRESS → RESOLVED → CLOSED
+- Assign bugs to specific developers
+- Search bugs by keyword
+- Filter bugs by status
+- View bugs assigned to you on the dashboard
+
+### Project Management
+- Create and manage projects (Admin only)
+- Each project contains its own bugs
+- Delete project cascades — all its bugs are deleted too
+- Bug count displayed per project
+
+### Dashboard
+- Real-time stats: total, open, in-progress, resolved, closed
+- Bugs assigned to the logged-in user
+- Live data from the backend on every page load
+
+### Role-Based Access Control
+| Action | User | Admin |
+|---|---|---|
+| View bugs and projects | ✅ | ✅ |
+| Create bugs | ✅ | ✅ |
+| Update bug status | ✅ | ✅ |
+| Create/edit/delete projects | ❌ | ✅ |
+| Assign bugs to users | ❌ | ✅ |
+| Delete bugs | ❌ | ✅ |
+| View all users | ❌ | ✅ |
 
 ---
 
-# 📂 Frontend Architecture
-
-```text
-bugsphere-frontend/src
-├── api
-├── assets
-├── components
-├── context
-├── pages
-└── main.jsx
-```
-
+## Project Structure
+bugsphere/                          ← root folder
+├── src/main/java/com/bugsphere/
+│   ├── config/
+│   │   └── SecurityConfig.java     ← Spring Security rules, CORS, JWT filter registration
+│   ├── controller/
+│   │   ├── AuthController.java     ← /api/auth/register and /api/auth/login
+│   │   ├── BugController.java      ← /api/bugs/** endpoints
+│   │   ├── ProjectController.java  ← /api/projects/** endpoints
+│   │   └── UserController.java     ← /api/users/** endpoints
+│   ├── dto/
+│   │   ├── AuthRequest.java        ← login request body
+│   │   ├── AuthResponse.java       ← login response (token + username + role)
+│   │   ├── BugRequest.java         ← create/update bug body
+│   │   ├── BugResponse.java        ← bug data sent to frontend
+│   │   ├── ProjectRequest.java     ← create/update project body
+│   │   ├── ProjectResponse.java    ← project data sent to frontend
+│   │   ├── RegisterRequest.java    ← register body (includes role + adminCode)
+│   │   └── UserResponse.java       ← user data (no password field)
+│   ├── entity/
+│   │   ├── Bug.java                ← bugs table
+│   │   ├── BugStatus.java          ← enum: OPEN, IN_PROGRESS, RESOLVED, CLOSED
+│   │   ├── Priority.java           ← enum: LOW, MEDIUM, HIGH, CRITICAL
+│   │   ├── Project.java            ← projects table
+│   │   ├── Role.java               ← enum: ROLE_USER, ROLE_ADMIN
+│   │   └── User.java               ← users table, implements UserDetails
+│   ├── exception/
+│   │   ├── ErrorResponse.java      ← consistent error JSON shape
+│   │   ├── GlobalExceptionHandler  ← catches all exceptions, returns clean errors
+│   │   └── ResourceNotFoundException ← thrown when entity not found (404)
+│   ├── repository/
+│   │   ├── BugRepository.java      ← DB queries for bugs
+│   │   ├── ProjectRepository.java  ← DB queries for projects
+│   │   └── UserRepository.java     ← DB queries for users
+│   ├── security/
+│   │   ├── CustomUserDetailsService.java ← loads user from DB for Spring Security
+│   │   ├── JwtAuthenticationFilter.java  ← reads + validates JWT on every request
+│   │   └── JwtUtil.java                  ← generates and parses JWT tokens
+│   └── service/
+│       ├── BugService.java         ← bug business logic
+│       ├── ProjectService.java     ← project business logic
+│       └── UserService.java        ← user business logic
+│
+├── src/main/resources/
+│   └── application.properties      ← DB config, JWT secret, admin code
+│
+└── bugsphere-frontend/             ← React frontend
+└── src/
+├── api/
+│   └── axios.js            ← axios instance with JWT interceptor
+├── components/
+│   ├── AppNavbar.jsx        ← top navigation bar
+│   ├── BugCard.jsx          ← reusable bug card component
+│   └── ProtectedRoute.jsx   ← redirects to login if not authenticated
+├── context/
+│   └── AuthContext.jsx      ← global auth state (user, login, logout)
+└── pages/
+├── LoginPage.jsx        ← sign in form
+├── RegisterPage.jsx     ← register with role selector + admin code
+├── DashboardPage.jsx    ← stats + assigned bugs
+├── BugListPage.jsx      ← all bugs with search and filter
+├── BugFormPage.jsx      ← create and edit bug form
+└── ProjectsPage.jsx     ← project list with admin controls
 ---
 
-# 🔐 Security Features
+## Getting Started
 
-* JWT Token Validation
-* BCrypt Password Encryption
-* Authentication Filter
-* Custom UserDetailsService
-* Secure API Access
-* Automatic Logout on Unauthorized Access
-* Role-Based Route Protection
+### Prerequisites
+- Java 17+
+- Maven 3.8+
+- PostgreSQL 14+
+- Node.js 18+
+- Git
 
----
-
-# ⚙️ Setup Instructions
-
-## 1️⃣ Clone Repository
-
+### 1. Clone the repository
 ```bash
-git clone https://github.com/PushpaYadav09/bugsphere.git
+git clone https://github.com/yourusername/bugsphere.git
+cd bugsphere
 ```
 
----
-
-## 2️⃣ Backend Setup
-
-### Configure PostgreSQL
-
-Create database:
-
+### 2. Create the database
+Open pgAdmin or psql and run:
 ```sql
 CREATE DATABASE bugsphere_db;
 ```
 
-### Update application.properties
-
+### 3. Configure the backend
+Open `src/main/resources/application.properties` and set:
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/bugsphere_db
-spring.datasource.username=postgres
-spring.datasource.password=yourpassword
+spring.datasource.username=your_postgres_username
+spring.datasource.password=your_postgres_password
+admin.secret.code=your_chosen_admin_code
 ```
 
----
-
-### Run Backend
-
+### 4. Run the backend
 ```bash
-mvn spring-boot:run
+# From the bugsphere root folder
+./mvnw spring-boot:run
 ```
+Backend starts at `http://localhost:8080`
 
-Backend runs on:
+Tables are auto-created by Hibernate on first run.
 
-```text
-http://localhost:8080
-```
-
----
-
-## 3️⃣ Frontend Setup
-
+### 5. Run the frontend
 ```bash
 cd bugsphere-frontend
 npm install
 npm run dev
 ```
-
-Frontend runs on:
-
-```text
-http://localhost:5173
-```
+Frontend starts at `http://localhost:5173`
 
 ---
 
-# 📡 API Features
+## API Reference
 
-## Authentication APIs
+### Auth (Public — no token needed)
 
-* Register User
-* Login User
-* JWT Token Generation
+| Method | Endpoint | Body | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | `{username, email, password, role, adminCode}` | Register new user |
+| POST | `/api/auth/login` | `{username, password}` | Login, returns JWT token |
 
-## Bug APIs
+### Projects (Authenticated)
 
-* Create Bug
-* Update Bug
-* Delete Bug
-* Fetch Bugs
-* Assign Bugs
-* Change Bug Status
+| Method | Endpoint | Role | Description |
+|---|---|---|---|
+| GET | `/api/projects` | User | Get all projects |
+| GET | `/api/projects/{id}` | User | Get one project |
+| GET | `/api/projects/search?name=x` | User | Search by name |
+| POST | `/api/projects` | Admin | Create project |
+| PUT | `/api/projects/{id}` | Admin | Update project |
+| DELETE | `/api/projects/{id}` | Admin | Delete project + all its bugs |
 
-## Project APIs
+### Bugs (Authenticated)
 
-* Create Project
-* Fetch Projects
+| Method | Endpoint | Role | Description |
+|---|---|---|---|
+| GET | `/api/bugs` | User | Get all bugs |
+| GET | `/api/bugs/{id}` | User | Get one bug |
+| GET | `/api/bugs/my` | User | Get bugs assigned to me |
+| GET | `/api/bugs/stats` | User | Get status counts |
+| GET | `/api/bugs/project/{id}` | User | Get bugs by project |
+| POST | `/api/bugs` | User | Create bug |
+| PUT | `/api/bugs/{id}` | User | Update bug |
+| PATCH | `/api/bugs/{id}/status?status=X` | User | Update status only |
+| PATCH | `/api/bugs/{id}/assign?userId=X` | Admin | Assign to user |
+| DELETE | `/api/bugs/{id}` | Admin | Delete bug |
 
-## User APIs
+### Users (Authenticated)
 
-* Fetch Users
-* Role-Based Access
+| Method | Endpoint | Role | Description |
+|---|---|---|---|
+| GET | `/api/users` | Admin | Get all users |
+| GET | `/api/users/{id}` | User | Get one user |
+| PATCH | `/api/users/{id}/make-admin` | Admin | Promote to admin |
+| DELETE | `/api/users/{id}` | Admin | Delete user |
+
+### How to authenticate
+Add this header to every request after login:
+---
+
+## How JWT Authentication Works
+1. POST /auth/login → server verifies password against BCrypt hash
+2. Server generates JWT: header.payload.signature
+3. Payload contains: username, issued time, expiry time
+4. Token signed with secret key using HMAC-SHA256
+5. Frontend stores token in localStorage
+6. Every request: Axios interceptor adds "Authorization: Bearer <token>"
+7. JwtAuthenticationFilter reads token, verifies signature, sets user in SecurityContext
+8. @PreAuthorize checks role from SecurityContext before controller runs
+---
+
+## Security Design Decisions
+
+**Why JWT over sessions?**
+Stateless — server stores nothing. Every request is self-contained. Scales horizontally without shared session storage.
+
+**Why BCrypt over MD5/SHA?**
+BCrypt generates a random salt per hash (defeats rainbow tables) and has a configurable cost factor that makes brute force computationally infeasible.
+
+**Why CSRF is disabled?**
+We use JWT in the Authorization header, not cookies. Malicious sites can't set custom headers cross-origin, so CSRF attacks are not possible in this setup.
+
+**Why DTOs instead of returning entities?**
+Prevents accidental exposure of password hashes and Spring Security internals. Decouples the API contract from the database schema.
+
+**Admin code protection?**
+Admin registration requires a secret code stored in application.properties. In production this would be an environment variable, never in the codebase.
 
 ---
 
-# 🧪 API Testing
+## Known Limitations
 
-API testing was performed using Postman with:
-
-* JWT token environments
-* Bearer token authorization
-* Protected route testing
-* CRUD API validation
-
----
-
-# 💡 Future Improvements
-
-* Email Notifications
-* File Attachments
-* Bug Comments
-* Dashboard Analytics
-* Docker Deployment
-* CI/CD Pipeline
+- JWT doesn't support refresh tokens — user must re-login after 24 hours
+- No unit tests yet (planned)
+- No bug detail page — navigate to `/bugs/{id}/edit` to view/edit a bug
+- No email notifications on bug assignment
+- Admin code is in application.properties — should be an env variable in production
 
 ---
 
-# 👩‍💻 Author
-
-## Pushpa Yadav
-
-MCA Student | Java Backend Developer | Full Stack Learner
-
-GitHub:
-[https://github.com/PushpaYadav09](https://github.com/PushpaYadav09)
-
----
-
-# ⭐ Project Status
-
-✅ Backend Completed
-✅ Frontend Integrated
-✅ JWT Authentication Working
-✅ PostgreSQL Connected
-✅ Full Stack Architecture Implemented
-✅ Search & Filter Added
-✅ Dashboard Statistics Working
