@@ -87,70 +87,30 @@ BugSphere is a mini Jira clone where:
 ---
 
 ## Project Structure
-bugsphere/                          ← root folder
+
+```
+bugsphere/
 ├── src/main/java/com/bugsphere/
 │   ├── config/
-│   │   └── SecurityConfig.java     ← Spring Security rules, CORS, JWT filter registration
+│   │   └── SecurityConfig.java
 │   ├── controller/
-│   │   ├── AuthController.java     ← /api/auth/register and /api/auth/login
-│   │   ├── BugController.java      ← /api/bugs/** endpoints
-│   │   ├── ProjectController.java  ← /api/projects/** endpoints
-│   │   └── UserController.java     ← /api/users/** endpoints
+│   │   ├── AuthController.java
+│   │   ├── BugController.java
+│   │   ├── ProjectController.java
+│   │   └── UserController.java
 │   ├── dto/
-│   │   ├── AuthRequest.java        ← login request body
-│   │   ├── AuthResponse.java       ← login response (token + username + role)
-│   │   ├── BugRequest.java         ← create/update bug body
-│   │   ├── BugResponse.java        ← bug data sent to frontend
-│   │   ├── ProjectRequest.java     ← create/update project body
-│   │   ├── ProjectResponse.java    ← project data sent to frontend
-│   │   ├── RegisterRequest.java    ← register body (includes role + adminCode)
-│   │   └── UserResponse.java       ← user data (no password field)
 │   ├── entity/
-│   │   ├── Bug.java                ← bugs table
-│   │   ├── BugStatus.java          ← enum: OPEN, IN_PROGRESS, RESOLVED, CLOSED
-│   │   ├── Priority.java           ← enum: LOW, MEDIUM, HIGH, CRITICAL
-│   │   ├── Project.java            ← projects table
-│   │   ├── Role.java               ← enum: ROLE_USER, ROLE_ADMIN
-│   │   └── User.java               ← users table, implements UserDetails
 │   ├── exception/
-│   │   ├── ErrorResponse.java      ← consistent error JSON shape
-│   │   ├── GlobalExceptionHandler  ← catches all exceptions, returns clean errors
-│   │   └── ResourceNotFoundException ← thrown when entity not found (404)
 │   ├── repository/
-│   │   ├── BugRepository.java      ← DB queries for bugs
-│   │   ├── ProjectRepository.java  ← DB queries for projects
-│   │   └── UserRepository.java     ← DB queries for users
 │   ├── security/
-│   │   ├── CustomUserDetailsService.java ← loads user from DB for Spring Security
-│   │   ├── JwtAuthenticationFilter.java  ← reads + validates JWT on every request
-│   │   └── JwtUtil.java                  ← generates and parses JWT tokens
 │   └── service/
-│       ├── BugService.java         ← bug business logic
-│       ├── ProjectService.java     ← project business logic
-│       └── UserService.java        ← user business logic
-│
-├── src/main/resources/
-│   └── application.properties      ← DB config, JWT secret, admin code
-│
-└── bugsphere-frontend/             ← React frontend
-└── src/
-├── api/
-│   └── axios.js            ← axios instance with JWT interceptor
-├── components/
-│   ├── AppNavbar.jsx        ← top navigation bar
-│   ├── BugCard.jsx          ← reusable bug card component
-│   └── ProtectedRoute.jsx   ← redirects to login if not authenticated
-├── context/
-│   └── AuthContext.jsx      ← global auth state (user, login, logout)
-└── pages/
-├── LoginPage.jsx        ← sign in form
-├── RegisterPage.jsx     ← register with role selector + admin code
-├── DashboardPage.jsx    ← stats + assigned bugs
-├── BugListPage.jsx      ← all bugs with search and filter
-├── BugFormPage.jsx      ← create and edit bug form
-└── ProjectsPage.jsx     ← project list with admin controls
----
-
+└── bugsphere-frontend/
+    └── src/
+        ├── api/
+        ├── components/
+        ├── context/
+        └── pages/
+```
 ## Getting Started
 
 ### Prerequisites
